@@ -46,7 +46,9 @@ A number of options were considered during planning. Utimately these approaches 
 ## Test cases
 - Changes to one directory trigger ci for that folder only
 - Changes to two folders do not trigger sub-project ci for the third
-- https://github.com/pbierkortte/co-repo-ci/pull/3 Commits without changes do nothing
+- Commits without changes do nothing
+- Successful PR merge triggers a tagging
+  - Commit id will match master at that moment  
 
 
 ## Future work
