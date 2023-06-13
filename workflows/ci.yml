@@ -1,0 +1,102 @@
+name: Run CI for each sub-project
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - closed
+      
+permissions:
+  contents: write
+
+concurrency:
+  group: ci
+
+jobs:
+  detect-directory-changes:
+    name: "Detect which sub-projects changed"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+           fetch-depth: 2
+      - name: Detect folder changes
+        id: detect
+        run: >
+          changed=$(
+          git diff HEAD~1 --name-only
+          | sed 's/.github//g'
+          | cut -d/ -f 1
+          | sort -u 
+          | jq -R -s -c 'split("\n") | map(select(length > 0))'
+          )
+          ; echo "changed=$changed" >> $GITHUB_OUTPUT
+      - name: Fail if no changes
+        if: ${{ steps.detect.outputs.changed == '[]' || steps.detect.outputs.changed == '' }}
+        run: exit 1
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+
+  vars:
+    name: Initialize variables
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+          fetch-depth: 0  
+    - id: step1
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    - id: step2
+      run: echo "unix_time=$(date +%s)" >> $GITHUB_OUTPUT
+    outputs:
+      sha_short: ${{ steps.step1.outputs.sha_short }}
+      unix_time: ${{ steps.step2.outputs.unix_time }}  
+
+  ci:
+    name: Run CI
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    needs:
+      - vars
+      - detect-directory-changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    strategy:
+      max-parallel: 1
+      matrix:
+        package: ${{ fromJSON(needs.detect-directory-changes.outputs.changed) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run CI script
+        run: |
+          set -euo pipefail
+          export LC_ALL=C
+          source scripts/ci.sh
+
+  tag:
+    name: Tag commit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    needs:
+      - detect-directory-changes
+      - vars
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - name: Show vars    
+      run: echo ${{needs.vars.outputs.sha_short}} ${{needs.vars.outputs.unix_time}}
+    - name: Add Tag
+      run: |
+          git config user.name "Github Actions"
+          git config user.email "github-ci@example.com"
+          git tag build-${{ needs.vars.outputs.sha_short }}
+          git push --tags
+  
