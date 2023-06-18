@@ -26,7 +26,7 @@ jobs:
       run: echo "sha_short=$(git rev-parse --short HEAD)" | tee -a $GITHUB_OUTPUT
     - id: unix_time
       run: echo "unix_time=$(date +%s)" | tee -a $GITHUB_OUTPUT
-    - name: Detect which sub-folder changed
+    - name: Detect which sub-folder(s) changed
       id: detect
       run: >
         changed=$(
