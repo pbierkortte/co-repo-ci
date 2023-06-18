@@ -14,31 +14,6 @@ concurrency:
   group: ci
 
 jobs:
-  detect-directory-changes:
-    name: "Detect which sub-projects changed"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-           fetch-depth: 2
-      - name: Detect folder changes
-        id: detect
-        run: >
-          changed=$(
-          git diff HEAD~1 --name-only
-          | sed 's/.github//g'
-          | cut -d/ -f 1
-          | sort -u 
-          | jq -R -s -c 'split("\n") | map(select(length > 0))'
-          )
-          ; echo "changed=$changed" >> $GITHUB_OUTPUT
-      - name: Fail if no changes
-        if: ${{ steps.detect.outputs.changed == '[]' || steps.detect.outputs.changed == '' }}
-        run: exit 1
-    outputs:
-      changed: ${{ steps.detect.outputs.changed }}
-
   vars:
     name: Initialize variables
     runs-on: ubuntu-latest
@@ -46,21 +21,35 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
       with:
-          fetch-depth: 0  
+          fetch-depth: 2 
     - id: sha_short
       run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
     - id: unix_time
       run: echo "unix_time=$(date +%s)" >> $GITHUB_OUTPUT
+    - name: Detect which sub-folder changed
+      id: detect
+      run: >
+        changed=$(
+        git diff HEAD~1 --name-only
+        | sed 's/.github//g'
+        | cut -d/ -f 1
+        | sort -u 
+        | jq -R -s -c 'split("\n") | map(select(length > 0))'
+        )
+        ; echo "changed=$changed" >> $GITHUB_OUTPUT
+    - name: Fail if no changes
+      if: ${{ steps.detect.outputs.changed == '[]' || steps.detect.outputs.changed == '' }}
+      run: exit 1
     outputs:
       sha_short: ${{ steps.sha_short.outputs.sha_short }}
-      unix_time: ${{ steps.unix_time.outputs.unix_time }}  
+      unix_time: ${{ steps.unix_time.outputs.unix_time }}
+      changed: ${{ steps.detect.outputs.changed }} 
 
   ci:
     name: Run CI
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
     needs:
       - vars
-      - detect-directory-changes
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
@@ -69,7 +58,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        package: ${{ fromJSON(needs.detect-directory-changes.outputs.changed) }}
+        package: ${{ fromJSON(needs.vars.outputs.changed) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -85,7 +74,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     needs:
-      - detect-directory-changes
       - vars
     steps:
     - name: Checkout
