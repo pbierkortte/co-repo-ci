@@ -54,3 +54,4 @@ A number of options were considered during planning. Utimately these approaches 
 ## Future work
 1. Version bump
 1. DBT example
+1. git subtree?
