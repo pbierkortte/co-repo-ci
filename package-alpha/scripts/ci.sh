@@ -1,3 +1,3 @@
 #!/bin/sh
 
-echo 'This is sub-project alpha'
+echo 'This is alpha'
