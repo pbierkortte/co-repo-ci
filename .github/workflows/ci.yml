@@ -21,7 +21,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
       with:
-          fetch-depth: 1 
+          fetch-depth: 2
     - id: sha_short
       run: echo "sha_short=$(git rev-parse --short HEAD)" | tee -a $GITHUB_OUTPUT
     - id: unix_time
@@ -30,7 +30,7 @@ jobs:
       id: detect
       run: >
         changed=$(
-        git diff origin/master --name-only
+        git diff HEAD^ --name-only
         | sed 's/.github//g'
         | cut -d/ -f 1
         | sort -u 
