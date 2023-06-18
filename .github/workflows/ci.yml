@@ -37,8 +37,9 @@ jobs:
         | jq -R -s -c 'split("\n") | map(select(length > 0))'
         )
         ; echo "changed=$changed" >> $GITHUB_OUTPUT
+        ; echo "$changed"
     - name: Fail if no changes
-      if: ${{ !steps.detect.outputs.changed }}
+      if: steps.detect.outputs.changed == ''
       run: exit 1
     outputs:
       sha_short: ${{ steps.sha_short.outputs.sha_short }}
