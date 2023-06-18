@@ -23,9 +23,9 @@ jobs:
       with:
           fetch-depth: 1 
     - id: sha_short
-      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      run: echo "sha_short=$(git rev-parse --short HEAD)" | tee -a $GITHUB_OUTPUT
     - id: unix_time
-      run: echo "unix_time=$(date +%s)" >> $GITHUB_OUTPUT
+      run: echo "unix_time=$(date +%s)" | tee -a $GITHUB_OUTPUT
     - name: Detect which sub-folder changed
       id: detect
       run: >
@@ -36,7 +36,7 @@ jobs:
         | sort -u 
         | jq -R -s -c 'split("\n") | map(select(length > 0))'
         )
-        ; echo "changed=$changed" >> $GITHUB_OUTPUT
+        ; echo "changed=$changed" | tee -a $GITHUB_OUTPUT
     outputs:
       sha_short: ${{ steps.sha_short.outputs.sha_short }}
       unix_time: ${{ steps.unix_time.outputs.unix_time }}
