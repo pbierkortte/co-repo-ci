@@ -21,7 +21,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
       with:
-          fetch-depth: 2 
+          fetch-depth: 1 
     - id: sha_short
       run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
     - id: unix_time
@@ -30,7 +30,7 @@ jobs:
       id: detect
       run: >
         changed=$(
-        git diff HEAD~1 --name-only
+        git diff origin/master --name-only
         | sed 's/.github//g'
         | cut -d/ -f 1
         | sort -u 
@@ -68,21 +68,21 @@ jobs:
 
   tag:
     name: Tag commit
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    if: github.event.action == 'closed' && github.event_name == 'pull_request' && needs.vars.outputs.changed != '[]'
     needs:
       - vars
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
-          fetch-depth: 0
+          fetch-depth: 1
     - name: Show vars    
       run: echo ${{needs.vars.outputs.sha_short}} ${{needs.vars.outputs.unix_time}}
     - name: Add Tag
       run: |
-          git config user.name "Github Actions"
-          git config user.email "github-ci@example.com"
-          git tag build-${{ needs.vars.outputs.sha_short }}
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
           git push --tags
   
