@@ -37,9 +37,6 @@ jobs:
         | jq -R -s -c 'split("\n") | map(select(length > 0))'
         )
         ; echo "changed=$changed" >> $GITHUB_OUTPUT
-    - name: Fail if no changes
-      if: steps.detect.outputs.changed == '[]'
-      run: exit 1
     outputs:
       sha_short: ${{ steps.sha_short.outputs.sha_short }}
       unix_time: ${{ steps.unix_time.outputs.unix_time }}
@@ -47,7 +44,7 @@ jobs:
 
   ci:
     name: Run CI
-    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    if: github.event.action != 'closed' && github.event_name == 'pull_request' && needs.vars.outputs.changed != '[]'
     needs:
       - vars
     runs-on: ubuntu-latest
@@ -72,7 +69,7 @@ jobs:
   tag:
     name: Tag commit
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    if: github.event.action == 'closed' && github.event_name == 'pull_request' && needs.vars.outputs.changed != '[]'
     needs:
       - vars
     steps:
