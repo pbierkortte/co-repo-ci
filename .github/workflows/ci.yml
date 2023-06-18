@@ -57,15 +57,19 @@ jobs:
       max-parallel: 1
       matrix:
         package: ${{ fromJSON(needs.vars.outputs.changed) }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
 
-      - name: Run CI script
-        run: |
-          set -euo pipefail
-          export LC_ALL=C
-          source scripts/ci.sh
+    steps:
+      - name: 
+        uses: ./.github/workflows/ci-${{ matrix.package }}.yml
+
+      # - name: Checkout
+      #   uses: actions/checkout@v3
+
+      # - name: Run CI script
+      #   run: |
+      #     set -euo pipefail
+      #     export LC_ALL=C
+      #     source scripts/ci.sh
 
   tag:
     name: Tag commit
