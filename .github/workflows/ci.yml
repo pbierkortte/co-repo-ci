@@ -31,8 +31,8 @@ jobs:
       run: >
         changed=$(
         git diff HEAD^ --name-only
-        | sed 's/.github//g'
         | xargs dirname
+        | sed 's/\..*/g'
         | cut -d/ -f 1
         | sort -u 
         | jq -R -s -c 'split("\n") | map(select(length > 0))'
