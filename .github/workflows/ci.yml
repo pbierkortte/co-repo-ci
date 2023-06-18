@@ -47,13 +47,13 @@ jobs:
       uses: actions/checkout@v3
       with:
           fetch-depth: 0  
-    - id: step1
+    - id: sha_short
       run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-    - id: step2
+    - id: unix_time
       run: echo "unix_time=$(date +%s)" >> $GITHUB_OUTPUT
     outputs:
-      sha_short: ${{ steps.step1.outputs.sha_short }}
-      unix_time: ${{ steps.step2.outputs.unix_time }}  
+      sha_short: ${{ steps.sha_short.outputs.sha_short }}
+      unix_time: ${{ steps.unix_time.outputs.unix_time }}  
 
   ci:
     name: Run CI
