@@ -69,15 +69,15 @@ jobs:
           export LC_ALL=C
           source '.github/workflows/ci_${{ matrix.package }}.sh'
     
-  complete:
-    name: complete
-    if: ! success()
-    runs-on: ubuntu-latest
-    needs:
-      - ci
-    steps:
-      - id: fail
-        run: exit 1
+  # complete:
+  #   name: complete
+  #   if: ! success()
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - ci
+  #   steps:
+  #     - id: fail
+  #       run: exit 1
 
     
   tag:
