@@ -49,7 +49,7 @@ jobs:
 
   ci:
     name: Run CI
-    if:  ${{ success() && needs.vars.outputs.changed != '[]' }}
+    if:  ! (cancelled() || failure() || needs.vars.outputs.changed == '[]')
     needs:
       - vars
     runs-on: ubuntu-latest
