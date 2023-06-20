@@ -27,11 +27,13 @@ jobs:
       with:
           fetch-depth: 2
     - id: sha_short
+      name: Short GIT SHA
       run: echo "sha_short=$(git rev-parse --short HEAD)" | tee -a $GITHUB_OUTPUT
     - id: unix_time
+      name: Unix time
       run: echo "unix_time=$(date +%s)" | tee -a $GITHUB_OUTPUT
-    - name: Detect which sub-folder(s) changed
-      id: detect
+    - id: detect
+      name: Detect which sub-folder(s) changed
       run: >
         changed=$(
         git diff HEAD^ --name-only
@@ -49,7 +51,7 @@ jobs:
 
   ci:
     name: Run CI
-    if: github.event.action != 'closed' && github.event_name == 'pull_request' && needs.vars.outputs.changed != '[]'
+    if: needs.vars.outputs.changed != '[]' && github.event.action != 'closed'
     needs:
       - vars
     runs-on: ubuntu-latest
@@ -68,7 +70,7 @@ jobs:
           set -euo pipefail
           export LC_ALL=C
           source '.github/workflows/ci_${{ matrix.package }}.sh'
-
+  
   tag:
     name: Tag commit
     if: github.event.pull_request.merged == true
