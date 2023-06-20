@@ -68,20 +68,7 @@ jobs:
           set -euo pipefail
           export LC_ALL=C
           source '.github/workflows/ci_${{ matrix.package }}.sh'
-    
-  # complete:
-  #   name: complete
-  #   if: success()
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #     - ci
-  #   steps:
-  #     - id: fail
-  #       run: exit 1
-
-  #       echo "### Hello world! :rocket:" >> $GITHUB_STEP_SUMMARY
-
-    
+  
   tag:
     name: Tag commit
     if: github.event.pull_request.merged == true
