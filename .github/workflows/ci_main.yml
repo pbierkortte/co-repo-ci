@@ -69,6 +69,14 @@ jobs:
           export LC_ALL=C
           source '.github/workflows/ci_${{ matrix.package }}.sh'
   
+  summary:
+    name: Summary
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Adding markdown
+        run: echo ':checkered_flag:' >> $GITHUB_STEP_SUMMARY
+  
   tag:
     name: Tag commit
     if: github.event.pull_request.merged == true
