@@ -71,7 +71,7 @@ jobs:
   
   summary:
     name: Summary
-    if: always()
+    if: always() && failure()
     needs:  
       - ci
     runs-on: ubuntu-latest
