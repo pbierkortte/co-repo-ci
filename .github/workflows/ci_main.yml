@@ -27,11 +27,13 @@ jobs:
       with:
           fetch-depth: 2
     - id: sha_short
+      name: Short GIT SHA
       run: echo "sha_short=$(git rev-parse --short HEAD)" | tee -a $GITHUB_OUTPUT
     - id: unix_time
+      name: Unix time
       run: echo "unix_time=$(date +%s)" | tee -a $GITHUB_OUTPUT
-    - name: Detect which sub-folder(s) changed
-      id: detect
+    - id: detect
+      name: Detect which sub-folder(s) changed
       run: >
         changed=$(
         git diff HEAD^ --name-only
@@ -77,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Adding markdown
-        run: echo ':checkered_flag:' >> $GITHUB_STEP_SUMMARY
+        run: echo ':heavy_check_mark:' >> $GITHUB_STEP_SUMMARY
   
   tag:
     name: Tag commit
