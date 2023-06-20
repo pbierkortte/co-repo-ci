@@ -71,8 +71,8 @@ jobs:
   
   summary:
     name: Summary
-    if: success()
-    needs: 
+    if: always()
+    needs:  
       - ci
     runs-on: ubuntu-latest
     steps:
