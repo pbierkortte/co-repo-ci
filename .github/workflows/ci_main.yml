@@ -73,7 +73,7 @@ jobs:
   
   summary:
     name: Summary
-    if: ${{ ! ( failure() || cancelled() )}}
+    if: ${{ ! ( failure() )}}
     needs:  
       - ci
     runs-on: ubuntu-latest
