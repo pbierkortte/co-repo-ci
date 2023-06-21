@@ -39,7 +39,7 @@ jobs:
         git diff HEAD^ --name-only
         | xargs dirname
         | sed 's/^\..*$//g'
-        | cut -d/ -f 1
+        | cut -d/ -f 2
         | sort -u 
         | jq -R -s -c 'split("\n") | map(select(length > 0))'
         )
