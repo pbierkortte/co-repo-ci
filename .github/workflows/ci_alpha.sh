@@ -1,3 +1,3 @@
 #!/bin/sh
 
-echo 'This is alpha'
+echo "This is $1"

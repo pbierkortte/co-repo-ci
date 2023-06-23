@@ -69,7 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           export LC_ALL=C
-          source '.github/workflows/ci_${{ matrix.package }}.sh'
+          source '.github/workflows/ci_${{ matrix.package }}.sh' '${{ matrix.package }}'
   
   tag:
     name: Tag commit
