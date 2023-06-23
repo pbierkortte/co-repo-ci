@@ -1,3 +1,3 @@
 #!/bin/sh
 
-echo 'This is bravo'
+echo "This is $1"

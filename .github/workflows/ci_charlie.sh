@@ -1,3 +1,3 @@
 #!/bin/sh
 
-echo 'This is charlie'
+echo "This is $1"
